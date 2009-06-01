@@ -1,0 +1,13 @@
+id: HeadingAnchors
+key: HeadingAnchors
+name: HeadingAnchors
+description: Adds id and anchor to every heading tag
+author_name: Beau Smith
+author_link: http://beausmith.com/
+
+version: 1.0
+
+tags:
+    modifier:
+        heading_anchors:
+            handler: $HeadingAnchors::HeadingAnchors::Plugin::mod_heading_anchors
