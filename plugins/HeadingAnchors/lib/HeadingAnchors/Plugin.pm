@@ -5,13 +5,19 @@ use MT::Util;
 
 sub mod_heading_anchors_replace {
     # define arguments
-    my ($h, $contents) = @_;
+    my ($h, $contents, $ctx) = @_;
     
-    # dirify contents to produce heading_id
-    my $heading_id = MT::Util::dirify($contents);
+    # dirify contents (using a dash) to produce heading_id
+    my $heading_id = MT::Util::dirify($contents,"-");
+    
+    # use full entry permalink if entry/page is in context
+    my $permalink = "";
+    if ($ctx->stash("entry")) {
+        $permalink = $ctx->_hdlr_entry_permalink({});
+    }
     
     # create anchor
-    my $anchor = "<a href=\"#$heading_id\" class=\"anchor\" title=\"Link to this section\"> ¶</a>";
+    my $anchor = "<a href=\"$permalink#$heading_id\" class=\"anchor\" title=\"Link to this section\"> ¶</a>";
     
     # create replacement string
     return "<h$h id=\"$heading_id\">$contents$anchor</h$h>";
@@ -19,7 +25,7 @@ sub mod_heading_anchors_replace {
 
 sub mod_heading_anchors {
     # define arguments
-    my ($text) = @_;
+    my ($text, $val, $ctx) = @_;
     
     # search & replace
     $text =~ s{
@@ -27,7 +33,7 @@ sub mod_heading_anchors {
         (.*?)       # content
         <\/h\1>     # closing heading tag
     }{
-        &mod_heading_anchors_replace($1,$2); # replacement subroutine
+        &mod_heading_anchors_replace($1, $2, $ctx); # replacement subroutine
     }xmsgie;    # perl regex options: http://perldoc.perl.org/perlre.html
     return $text;
 }
